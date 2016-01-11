@@ -1,0 +1,61 @@
+{% extends 'main.html' %}
+
+{% block notes %}
+<a href="/note/add/">Создать заметку</a>
+<table border="1">
+<tr>
+    <th>Заголовок</th>
+    <th>Дата</th>
+    <th>Текст</th>
+    <th>Категория</th>
+    <th>Избранное</th>
+    <th>Пользователь</th>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th>Ссылка</th>
+</tr>
+{% for note in notes %}
+    <tr>
+    <td>{{ note.note_title }}</td>
+    <td>{{ note.note_date }}</td>
+    <td>{{ note.note_text }}</td>
+    <td>{{ note.get_note_category_display}}</td>
+    <td><input id="{{ note.id }}" class="is_favourite" type="checkbox"{% if note.note_favourite %}checked = checked{% endif %}></td>
+    <td>{{ note.created_by }}</td>
+    <td><a href="/note/update?id={{ note.id }}">Редактировать</a></td>
+    <td><a href="/note/delete?id={{ note.id }}">Удалить</a></td>
+    <td><a href="/note/publish?id={{ note.id }}">
+        {% if note.note_published %}
+            Отменить публикацию
+        {% else %}
+            Опубликовать
+        {% endif %}
+    </a></td>
+    <td><a href="/note/show/{{ note.note_uuid }}" target="_blank">
+        {% if note.note_published %}
+        http://{{ request.get_host }}/note/show/{{ note.note_uuid }}
+        {% else %}
+        {% endif %}
+    </a></td>
+    </tr>
+{% endfor %}
+
+</table>
+
+<script type="text/javascript">
+
+$( ".is_favourite" ).on( "click", function( event ) {
+    id = $(this).attr('id');
+      $.ajax({
+          type: "POST",
+          url: '/note/setFavourite/',
+          data: {id: id},
+          success: function (data) {
+              console.log(data);
+          }
+    });
+});
+
+</script>
+{% endblock %}
